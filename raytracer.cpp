@@ -66,26 +66,62 @@ enum Refl_t {
     REFR
 };
 
+// sphere class
+struct Sphere {
+    // radius
+    double rad;
+    // center
+    Vec p;
+    // emission
+    Vec e;
+    // color
+    Vec c;
+    // reflection type
+    Refl_t refl;
+    // constructor
+    Sphere(double rad, Vec p, Vec e, Vec c, Refl_t refl) {
+        this->rad = rad;
+        this->p = p;
+        this->e = e;
+        this->c = c;
+        this->refl = refl;
+    }
+    // calculate intersect of sphere and ray
+    double intersect(const Ray &r) const {
+        // ray origin -> sphere center
+        Vec op = p - r.o;
+        // fudge factor
+        double eps = 1e-4;
+        // actually -1/2 b
+        double b = op.dot(r.d);
+        // (b^2 - 4ac) / 4, note that a = 1 as ray is normalized
+        double det = b * b - (op.dot(op) - rad * rad);
+        // ray misses sphere
+        if (det < 0)
+            return 0;
+        det = sqrt(det);
+        // return smaller positive t
+        double t1 = b - det;
+        if (t1 > eps)
+            return t1;
+        double t2 = b + det;
+        if (t2 > eps)
+            return t2;
+        return 0;
+    }
+};
+
 int main(int argc, char* argv[]) {
-    // Create two vectors
-    Vec vec1(1.0, 2.0, 3.0);
-    Vec vec2(4.0, 5.0, 6.0);
+    // Create a sphere
+    Sphere sphere(1.0, Vec(0.0, 0.0, 0.0), Vec(0.0, 0.0, 0.0), Vec(1.0, 0.0, 0.0), DIFF);
 
-    // Perform vector operations
-    Vec sum = vec1 + vec2;
-    Vec difference = vec1 - vec2;
-    Vec scalarProduct = vec1 * 2.0;
-    Vec hadamardProduct = vec1.mult(vec2);
-    double dotProduct = vec1.dot(vec2);
-    Vec crossProduct = vec1.cross(vec2);
+    // Create a ray (adjust the values as needed)
+    Ray ray(Vec(0.0, 0.0, -5.0), Vec(0.0, 0.0, 1.0));
 
-    // Print the results
-    std::cout << "Sum: (" << sum.x << ", " << sum.y << ", " << sum.z << ")\n";
-    std::cout << "Difference: (" << difference.x << ", " << difference.y << ", " << difference.z << ")\n";
-    std::cout << "Scalar Product: (" << scalarProduct.x << ", " << scalarProduct.y << ", " << scalarProduct.z << ")\n";
-    std::cout << "Hadamard Product: (" << hadamardProduct.x << ", " << hadamardProduct.y << ", " << hadamardProduct.z << ")\n";
-    std::cout << "Dot Product: " << dotProduct << "\n";
-    std::cout << "Cross Product: (" << crossProduct.x << ", " << crossProduct.y << ", " << crossProduct.z << ")\n";
+    // Test intersection
+    double intersectionDistance = sphere.intersect(ray);
+
+    std::cout << intersectionDistance << std::endl;
 
     return 0;
 }
