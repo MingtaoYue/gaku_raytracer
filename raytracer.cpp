@@ -56,6 +56,13 @@ struct Ray {
     }
 };
 
+// reflection type: diffuse, specular, refractive
+enum Refl_t {
+    DIFF,
+    SPEC,
+    REFR
+};
+
 int main(int argc, char* argv[]) {
     // Create two vectors
     Vec vec1(1.0, 2.0, 3.0);
