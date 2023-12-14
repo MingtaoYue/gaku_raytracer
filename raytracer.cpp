@@ -43,6 +43,19 @@ struct Vec {
     }
 };
 
+// ray class
+struct Ray {
+    // origin
+    Vec o;
+    // direction
+    Vec d;
+    // constructor
+    Ray(Vec o, Vec d) {
+        this->o = o;
+        this->d = d;
+    }
+};
+
 int main(int argc, char* argv[]) {
     // Create two vectors
     Vec vec1(1.0, 2.0, 3.0);
