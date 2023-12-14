@@ -56,10 +56,13 @@ struct Ray {
     }
 };
 
-// reflection type: diffuse, specular, refractive
+// reflection type
 enum Refl_t {
+    // diffuse
     DIFF,
+    // specular
     SPEC,
+    // refractive
     REFR
 };
 
