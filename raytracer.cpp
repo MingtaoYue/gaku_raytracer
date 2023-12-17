@@ -187,7 +187,30 @@ int main(int argc, char* argv[]) {
     Ray cam(Vec(50, 52, 295.6), Vec(0, -0.042612, -1).norm());
     // x, y direction of camera, 0.5135 defines filed of view angle
     Vec cx = Vec(w * .5135 / h, 0, 0), cy = (cx.cross(cam.d)).norm() * .5135;
-
+    
+    // OpenMP
+#pragma omp parallel for schedule(dynamic, 1) private(r)
+    // loop over rows
+    for (int y = 0; y < h; y++) {
+        // random seed
+        unsigned short Xi[3] = {0, 0, y * y * y};
+        // loop over columns
+        for (int x = 0; x < w; x++) {
+            // current pixel
+            int i = (h - y - 1) * w + x;
+            // loop over 2x2 sub-pixel rows
+            for (int sy = 0; sy < 2; sy++) {
+                for (int sx = 0; sx < 2; sx++) {
+                    // init radiance
+                    r = Vec();
+                    // loop over samples
+                    for (int s = 0; s < samps; s++) {
+                        // TODO
+                    }
+                }
+            }
+        }
+    }
     return 0;
 }
 
