@@ -201,7 +201,20 @@ Vec radiance(const Ray &r, int depth, unsigned short *Xi) {
             f = f * (1 / p);
         else return obj.e;
     }
-    
+    // ideal diffuse reflection
+    if (obj.refl == DIFF){
+        // random generation
+        double r1 = 2 * M_PI * erand48(Xi), r2 = erand48(Xi), r2s = sqrt(r2);
+        // reflection direction
+        Vec w = nl;
+        // perpendicular to the surface normal and lies in the plane of reflection
+        Vec u = ((fabs(w.x)>.1?Vec(0,1):Vec(1)).cross(w)).norm();
+        // perpendicular to w and u
+        Vec v = w.cross(u);
+        // direction of the reflected ray
+        Vec d = (u * cos(r1) * r2s + v * sin(r1) * r2s + w * sqrt(1 - r2)).norm(); 
+        return obj.e + f.mult(radiance(Ray(x, d), depth, Xi));
+    }
     return Vec(0, 0, 0);
 }
 
