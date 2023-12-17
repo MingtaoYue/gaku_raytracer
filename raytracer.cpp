@@ -173,6 +173,10 @@ bool intersect(const Ray &r, double &t, int &id) {
     return t < 1e20;
 }
 
+Vec radiance(const Ray &r, int depth, unsigned short *Xi) {
+    return Vec(0, 0, 0);
+}
+
 int main(int argc, char* argv[]) {
     // image size
     int w = 1024, h = 768;
@@ -205,12 +209,25 @@ int main(int argc, char* argv[]) {
                     r = Vec();
                     // loop over samples
                     for (int s = 0; s < samps; s++) {
-                        // TODO
+                        // generate a random position within the pixel
+                        double r1 = 2 * erand48(Xi), dx = r1 < 1 ? sqrt(r1) - 1: 1 - sqrt(2 - r1); 
+                        double r2 = 2 * erand48(Xi), dy = r2 < 1 ? sqrt(r2) - 1: 1 - sqrt(2 - r2);
+                        // compute direction
+                        Vec d = cx *(((sx + .5 + dx) / 2 + x) / w - .5) + cy * (((sy + .5 + dy) / 2 + y) / h - .5) + cam.d; 
+                        // average the radiance over one sub-pixel
+                        r = r + radiance(Ray(cam.o + d * 140, d.norm()), 0, Xi) * (1. / samps);
                     }
+                    // average the radiance over one pixel
+                    img[i] = img[i] + Vec(clamp(r.x),clamp(r.y),clamp(r.z))*.25; 
                 }
             }
-        }
+        }   
     }
+    // write image
+    FILE *f = fopen("image.ppm", "w");
+    fprintf(f, "P3\n%d %d\n%d\n", w, h, 255); 
+    for (int i = 0; i < w * h; i++) 
+        fprintf(f,"%d %d %d ", toInt(img[i].x), toInt(img[i].y), toInt(img[i].z));
     return 0;
 }
 
