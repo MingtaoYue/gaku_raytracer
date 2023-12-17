@@ -174,16 +174,19 @@ bool intersect(const Ray &r, double &t, int &id) {
 }
 
 int main(int argc, char* argv[]) {
-    // Create a sphere
-    Sphere sphere(1.0, Vec(0.0, 0.0, 0.0), Vec(0.0, 0.0, 0.0), Vec(1.0, 0.0, 0.0), DIFF);
+    // image size
+    int w = 1024, h = 768;
+    // # of samples, default is 1
+    int samps = (argc == 2) ? atoi(argv[1]) / 4 : 1;
+    // colors of samples
+    Vec r;
+    // init image
+    Vec *img = new Vec[w * h];
 
-    // Create a ray (adjust the values as needed)
-    Ray ray(Vec(0.0, 0.0, -5.0), Vec(0.0, 0.0, 1.0));
-
-    // Test intersection
-    double intersectionDistance = sphere.intersect(ray);
-
-    std::cout << intersectionDistance << std::endl;
+    // camera position, gaze direction
+    Ray cam(Vec(50, 52, 295.6), Vec(0, -0.042612, -1).norm());
+    // x, y direction of camera, 0.5135 defines filed of view angle
+    Vec cx = Vec(w * .5135 / h, 0, 0), cy = (cx.cross(cam.d)).norm() * .5135;
 
     return 0;
 }
