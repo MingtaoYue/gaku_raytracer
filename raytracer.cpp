@@ -215,6 +215,9 @@ Vec radiance(const Ray &r, int depth, unsigned short *Xi) {
         Vec d = (u * cos(r1) * r2s + v * sin(r1) * r2s + w * sqrt(1 - r2)).norm(); 
         return obj.e + f.mult(radiance(Ray(x, d), depth, Xi));
     }
+    // ideal specular reflection 
+    else if (obj.refl == SPEC)
+        return obj.e + f.mult(radiance(Ray(x, r.d - n * 2 * n.dot(r.d)), depth, Xi));
     return Vec(0, 0, 0);
 }
 
