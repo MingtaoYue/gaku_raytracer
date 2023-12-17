@@ -174,6 +174,34 @@ bool intersect(const Ray &r, double &t, int &id) {
 }
 
 Vec radiance(const Ray &r, int depth, unsigned short *Xi) {
+    // distance to the intersection
+    double t;
+    // id of the intersected object
+    int id = 0;
+    // if no intersection, return black
+    if (!intersect(r, t, id)) 
+        return Vec();
+    // first intersected object
+    const Sphere &obj = spheres[id];
+    // intersection point
+    Vec x = r.o + r.d * t;
+    // normal vector at the intersection point
+    Vec n = (x - obj.p).norm();
+    // surface normal that is oppose to the ray direction
+    Vec nl = n.dot(r.d) < 0 ? n : n * -1;
+    // object color
+    Vec f = obj.c;
+    // take the max reflectivity
+    double p = f.x > f.y && f.x > f.z ? f.x : f.y > f.z ? f.y : f.z;
+    // increase level of recursion
+    depth++;
+    if (depth > 5) {
+        // russian roulette
+        if (erand48(Xi) < p) 
+            f = f * (1 / p);
+        else return obj.e;
+    }
+    
     return Vec(0, 0, 0);
 }
 
