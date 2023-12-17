@@ -158,7 +158,7 @@ bool intersect(const Ray &r, double &t, int &id) {
     // # of objects/spheres in the scene
     double n = sizeof(spheres) / sizeof(Sphere);
     // init t to a very big number
-    double t = 1e20;
+    t = 1e20;
     // current minimum t
     double t_min;
     // check each of the sphere, choose the minimum distance
