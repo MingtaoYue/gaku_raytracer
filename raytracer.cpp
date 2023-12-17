@@ -218,6 +218,17 @@ Vec radiance(const Ray &r, int depth, unsigned short *Xi) {
     // ideal specular reflection 
     else if (obj.refl == SPEC)
         return obj.e + f.mult(radiance(Ray(x, r.d - n * 2 * n.dot(r.d)), depth, Xi));
+    // ideal refraction (Snell's law)
+    Ray reflRay(x, r.d - n * 2 * n.dot(r.d));
+    // ray entering or leaving
+    bool into = n.dot(nl) > 0;
+    // refractive indices of the two media and their ratio
+    double nc = 1, nt = 1.5, nnt = into ? nc / nt : nt / nc;
+    double ddn = r.d.dot(nl);
+    double cos2t;
+    // total internal reflection
+    if ((cos2t = 1 - nnt * nnt * (1 - ddn * ddn)) < 0)
+        return obj.e + f.mult(radiance(reflRay, depth, Xi)); 
     return Vec(0, 0, 0);
 }
 
