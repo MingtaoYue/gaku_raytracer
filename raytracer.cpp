@@ -229,7 +229,16 @@ Vec radiance(const Ray &r, int depth, unsigned short *Xi) {
     // total internal reflection
     if ((cos2t = 1 - nnt * nnt * (1 - ddn * ddn)) < 0)
         return obj.e + f.mult(radiance(reflRay, depth, Xi)); 
-    return Vec(0, 0, 0);
+    // refrection ray direction
+    Vec tdir = (r.d * nnt - n * ((into ? 1 : -1) * (ddn * nnt + sqrt(cos2t)))).norm();
+    // Several coefficients computation based on Fresnel-Schlick approximation
+    double a = nt - nc, b = nt + nc, R0 = a * a / (b * b), c = 1 - (into ? - ddn : tdir.dot(n)); 
+    double Re = R0 + (1 - R0) * c * c * c * c * c;
+    double Tr = 1 - Re, P = .25 + .5 * Re, RP = Re / P, TP = Tr / (1 - P); 
+    // Russian roulette 
+    return obj.e + f.mult(depth > 2 ? (erand48(Xi) < P ?
+     radiance(reflRay, depth, Xi) * RP : radiance(Ray(x, tdir), depth, Xi) * TP) : 
+     radiance(reflRay, depth, Xi) * Re + radiance(Ray(x, tdir), depth, Xi) * Tr);
 }
 
 int main(int argc, char* argv[]) {
