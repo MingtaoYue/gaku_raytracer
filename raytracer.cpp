@@ -148,3 +148,22 @@ int main(int argc, char* argv[]) {
 
     return 0;
 }
+
+// clamp the number to be in range [0, 1]
+double clamp(double x) {
+    if (x < 0)
+        return 0;
+    if (x > 1)
+        return 1;
+    return x;
+}
+
+// convert colors to displayable range [0, 255]
+int toInt(double x) {
+    // clamp the number to be in range [0, 1]
+    double clamped_x = clamp(x);
+    // gamma correction of 2.2
+    double gamma_x = pow(clamped_x, 1 / 2.2);
+    // convert to range [0, 255]
+    return int(gamma_x * 255 + .5);
+}
