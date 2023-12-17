@@ -134,21 +134,6 @@ Sphere spheres[] = {
     Sphere(600, Vec(50, 681.6 - .27, 81.6),Vec(12, 12, 12), Vec(), DIFF)
 };
 
-int main(int argc, char* argv[]) {
-    // Create a sphere
-    Sphere sphere(1.0, Vec(0.0, 0.0, 0.0), Vec(0.0, 0.0, 0.0), Vec(1.0, 0.0, 0.0), DIFF);
-
-    // Create a ray (adjust the values as needed)
-    Ray ray(Vec(0.0, 0.0, -5.0), Vec(0.0, 0.0, 1.0));
-
-    // Test intersection
-    double intersectionDistance = sphere.intersect(ray);
-
-    std::cout << intersectionDistance << std::endl;
-
-    return 0;
-}
-
 // clamp the number to be in range [0, 1]
 double clamp(double x) {
     if (x < 0)
@@ -167,3 +152,39 @@ int toInt(double x) {
     // convert to range [0, 255]
     return int(gamma_x * 255 + .5);
 }
+
+// check intersection with the scene
+bool intersect(const Ray &r, double &t, int &id) {
+    // # of objects/spheres in the scene
+    double n = sizeof(spheres) / sizeof(Sphere);
+    // init t to a very big number
+    double t = 1e20;
+    // current minimum t
+    double t_min;
+    // check each of the sphere, choose the minimum distance
+    for (int i = 0; i < n; i++) {
+        t_min = spheres[i].intersect(r);
+        if (t_min > 0 && t_min < t) {
+            t = t_min;
+            // first intersected sphere id
+            id = i;
+        }
+    }
+    return t < 1e20;
+}
+
+int main(int argc, char* argv[]) {
+    // Create a sphere
+    Sphere sphere(1.0, Vec(0.0, 0.0, 0.0), Vec(0.0, 0.0, 0.0), Vec(1.0, 0.0, 0.0), DIFF);
+
+    // Create a ray (adjust the values as needed)
+    Ray ray(Vec(0.0, 0.0, -5.0), Vec(0.0, 0.0, 1.0));
+
+    // Test intersection
+    double intersectionDistance = sphere.intersect(ray);
+
+    std::cout << intersectionDistance << std::endl;
+
+    return 0;
+}
+
